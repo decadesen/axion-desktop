@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Battery Status Card</title>
+  <style>
+    @property --level {
+      syntax: '<percentage>';
+      inherits: false;
+      initial-value: 10%;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      background: #000;
+      display: grid;
+      place-items: center;
+    }
+
+    .card {
+      position: relative;
+      width: 450px;
+      height: 450px;
+      /* 修复在某些缩放下的偏移，确保完全居中 */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* shared SVG sizing */
+    .svg-bright,
+    .svg-dimmed {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+    }
+
+    /* bright neon outline */
+    .svg-bright {
+      z-index: 1;
+      stroke: rgba(0, 230, 255, 0.75);
+      filter:
+        drop-shadow(0 0 6px #00ebff)
+        drop-shadow(0 0 10px rgba(55, 255, 255, 0.7));
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 500;
+      stroke-dashoffset: 500;
+      animation: drawSVG 3.3s ease forwards infinite alternate;
+    }
+
+    @keyframes drawSVG {
+      0%   { stroke-dashoffset: 500; }
+      100% { stroke-dashoffset: 0; }
+    }
+
+    /* dimmed outline, clipped to the glass panel region */
+    .svg-dimmed {
+      z-index: 2;
+      stroke: rgba(0, 230, 255, 0.25);
+      filter: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      /* 调整裁剪区域以匹配玻璃面板的位置 */
+      clip-path: inset(56.1px 119.1px 188.9px 125.9px round 25px);
+      pointer-events: none;
+    }
+
+    /* glass panel */
+    .glass-card {
+      position: absolute;
+      left: 50.75%;
+      top: 35.25%;
+      transform: translate(-50%, -50%);
+      width: 205px;
+      height: 205px;
+      border-radius: 25px;
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow:
+        inset 0 0 0.8px rgba(255, 255, 255, 0.55),
+        inset 0 0 18px rgba(255, 255, 255, 0.08),
+        0 10px 24px rgba(0, 0, 0, 0.65);
+      z-index: 3;
+      overflow: hidden;
+    }
+
+    .glass-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(125deg,
+        rgba(255, 255, 255, 0.25) 0%,
+        rgba(255, 255, 255, 0.02) 45%,
+        rgba(255, 255, 255, 0.28) 100%);
+      background-size: 220% 220%;
+      animation: sheen 14s ease-in-out infinite;
+      border-radius: inherit;
+    }
+
+    .glass-card:hover {
+      cursor: pointer;
+    }
+
+    .glass-card:hover::before {
+      border: 1px solid rgba(0, 230, 255, 1);
+      cursor: pointer;
+      filter: drop-shadow(0px 0px 15px rgba(0, 230, 255, 1));
+      background: linear-gradient(125deg,
+        rgba(255, 255, 255, 0.25) 0%,
+        rgba(0, 0, 0, 0.02) 45%,
+        rgba(0, 0, 0, 0.28) 100%);
+    }
+
+    .battery-info:hover span {
+      color: rgba(0, 230, 255, 1);
+    }
+
+    .card:hover .battery-percentage::after {
+      color: rgba(255, 255, 255, 1);
+      text-shadow: none;
+    }
+
+    @keyframes sheen {
+      0%, 100% { background-position: 0 0; }
+      50%      { background-position: 100% 100%; }
+    }
+
+    /* battery info */
+    .battery-info {
+      position: relative;
+      z-index: 4;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 22px;
+      font-family: "Inter", "Segoe UI", sans-serif;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: #eafdff;
+    }
+
+    /* battery percentage counter */
+    .battery-percentage {
+      position: relative;
+      font-size: 46px;
+      font-weight: 700;
+      line-height: 1;
+      color: transparent; /* hide original text */
+    }
+    
+    .battery-percentage::after {
+      content: "10%"; /* start at 10% */
+      position: absolute;
+      top: 0; 
+      left: 0;
+      animation: count-up 336.6s steps(102) infinite;
+      color: rgba(0, 230, 255, 1);
+      text-shadow: 0px 0px 15px rgba(0, 230, 255, 0.95), 0px 0px 30px rgba(0, 230, 255, 1);
+    }
+
+    @keyframes count-up {
+      0%      { content: "10%"; }
+      0.990%  { content: "11%"; }
+      1.980%  { content: "12%"; }
+      2.970%  { content: "13%"; }
+      3.960%  { content: "14%"; }
+      4.950%  { content: "15%"; }
+      5.940%  { content: "16%"; }
+      6.930%  { content: "17%"; }
+      7.920%  { content: "18%"; }
+      8.910%  { content: "19%"; }
+      9.901%  { content: "20%"; }
+      10.891%  { content: "21%"; }
+      11.881%  { content: "22%"; }
+      12.871%  { content: "23%"; }
+      13.861%  { content: "24%"; }
+      14.851%  { content: "25%"; }
+      15.841%  { content: "26%"; }
+      16.831%  { content: "27%"; }
+      17.821%  { content: "28%"; }
+      18.811%  { content: "29%"; }
+      19.802%  { content: "30%"; }
+      20.792%  { content: "31%"; }
+      21.782%  { content: "32%"; }
+      22.772%  { content: "33%"; }
+      23.762%  { content: "34%"; }
+      24.753%  { content: "35%"; }
+      25.743%  { content: "36%"; }
+      26.733%  { content: "37%"; }
+      27.723%  { content: "38%"; }
+      28.713%  { content: "39%"; }
+      29.703%  { content: "40%"; }
+      30.693%  { content: "41%"; }
+      31.683%  { content: "42%"; }
+      32.673%  { content: "43%"; }
+      33.663%  { content: "44%"; }
+      34.653%  { content: "45%"; }
+      35.643%  { content: "46%"; }
+      36.634%  { content: "47%"; }
+      37.624%  { content: "48%"; }
+      38.614%  { content: "49%"; }
+      39.604%  { content: "50%"; }
+      40.594%  { content: "51%"; }
+      41.584%  { content: "52%"; }
+      42.574%  { content: "53%"; }
+      43.564%  { content: "54%"; }
+      44.554%  { content: "55%"; }
+      45.544%  { content: "56%"; }
+      46.535%  { content: "57%"; }
+      47.525%  { content: "58%"; }
+      48.515%  { content: "59%"; }
+      49.505%  { content: "60%"; }
+      50.495%  { content: "61%"; }
+      51.485%  { content: "62%"; }
+      52.475%  { content: "63%"; }
+      53.465%  { content: "64%"; }
+      54.455%  { content: "65%"; }
+      55.445%  { content: "66%"; }
+      56.436%  { content: "67%"; }
+      57.426%  { content: "68%"; }
+      58.416%  { content: "69%"; }
+      59.406%  { content: "70%"; }
+      60.396%  { content: "71%"; }
+      61.386%  { content: "72%"; }
+      62.376%  { content: "73%"; }
+      63.366%  { content: "74%"; }
+      64.356%  { content: "75%"; }
+      65.346%  { content: "76%"; }
+      66.336%  { content: "77%"; }
+      67.327%  { content: "78%"; }
+      68.317%  { content: "79%"; }
+      69.307%  { content: "80%"; }
+      70.297%  { content: "81%"; }
+      71.287%  { content: "82%"; }
+      72.277%  { content: "83%"; }
+      73.267%  { content: "84%"; }
+      74.257%  { content: "85%"; }
+      75.247%  { content: "86%"; }
+      76.237%  { content: "87%"; }
+      77.227%  { content: "88%"; }
+      78.217%  { content: "89%"; }
+      79.208%  { content: "90%"; }
+      80.198%  { content: "91%"; }
+      81.188%  { content: "92%"; }
+      82.178%  { content: "93%"; }
+      83.168%  { content: "94%"; }
+      84.158%  { content: "95%"; }
+      85.148%  { content: "96%"; }
+      86.138%  { content: "97%"; }
+      87.128%  { content: "98%"; }
+      88.118%  { content: "99%"; }
+      89.109%  { content: "100%"; }
+      90.099%  { content: "0%"; }
+      91.089%  { content: "1%"; }
+      92.079%  { content: "2%"; }
+      93.069%  { content: "3%"; }
+      94.059%  { content: "4%"; }
+      95.050%  { content: "5%"; }
+      96.040%  { content: "6%"; }
+      97.030%  { content: "7%"; }
+      98.020%  { content: "8%"; }
+      99.010%  { content: "9%"; }
+      100%     { content: "10%"; }
+    }
+
+    /* battery health counter */
+    .battery-health {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: .55em;
+      font-size: .72rem;
+      color: #b6e5f2;
+    }
+    .battery-health span {
+      visibility: hidden;
+    }
+    .battery-health::after {
+      content: "10% BATTERY HEALTH";
+      position: absolute;
+      top: 0; left: 1.25em;
+      animation: health-up 336.6s steps(102) infinite;
+    }
+
+    @keyframes health-up {
+      0%      { content: "10% BATTERY HEALTH"; }
+      0.990%  { content: "11% BATTERY HEALTH"; }
+      1.980%  { content: "12% BATTERY HEALTH"; }
+      2.970%  { content: "13% BATTERY HEALTH"; }
+      3.960%  { content: "14% BATTERY HEALTH"; }
+      4.950%  { content: "15% BATTERY HEALTH"; }
+      5.940%  { content: "16% BATTERY HEALTH"; }
+      6.930%  { content: "17% BATTERY HEALTH"; }
+      7.920%  { content: "18% BATTERY HEALTH"; }
+      8.910%  { content: "19% BATTERY HEALTH"; }
+      9.901%  { content: "20% BATTERY HEALTH"; }
+      10.891%  { content: "21% BATTERY HEALTH"; }
+      11.881%  { content: "22% BATTERY HEALTH"; }
+      12.871%  { content: "23% BATTERY HEALTH"; }
+      13.861%  { content: "24% BATTERY HEALTH"; }
+      14.851%  { content: "25% BATTERY HEALTH"; }
+      15.841%  { content: "26% BATTERY HEALTH"; }
+      16.831%  { content: "27% BATTERY HEALTH"; }
+      17.821%  { content: "28% BATTERY HEALTH"; }
+      18.811%  { content: "29% BATTERY HEALTH"; }
+      19.802%  { content: "30% BATTERY HEALTH"; }
+      20.792%  { content: "31% BATTERY HEALTH"; }
+      21.782%  { content: "32% BATTERY HEALTH"; }
+      22.772%  { content: "33% BATTERY HEALTH"; }
+      23.762%  { content: "34% BATTERY HEALTH"; }
+      24.753%  { content: "35% BATTERY HEALTH"; }
+      25.743%  { content: "36% BATTERY HEALTH"; }
+      26.733%  { content: "37% BATTERY HEALTH"; }
+      27.723%  { content: "38% BATTERY HEALTH"; }
+      28.713%  { content: "39% BATTERY HEALTH"; }
+      29.703%  { content: "40% BATTERY HEALTH"; }
+      30.693%  { content: "41% BATTERY HEALTH"; }
+      31.683%  { content: "42% BATTERY HEALTH"; }
+      32.673%  { content: "43% BATTERY HEALTH"; }
+      33.663%  { content: "44% BATTERY HEALTH"; }
+      34.653%  { content: "45% BATTERY HEALTH"; }
+      35.643%  { content: "46% BATTERY HEALTH"; }
+      36.634%  { content: "47% BATTERY HEALTH"; }
+      37.624%  { content: "48% BATTERY HEALTH"; }
+      38.614%  { content: "49% BATTERY HEALTH"; }
+      39.604%  { content: "50% BATTERY HEALTH"; }
+      40.594%  { content: "51% BATTERY HEALTH"; }
+      41.584%  { content: "52% BATTERY HEALTH"; }
+      42.574%  { content: "53% BATTERY HEALTH"; }
+      43.564%  { content: "54% BATTERY HEALTH"; }
+      44.554%  { content: "55% BATTERY HEALTH"; }
+      45.544%  { content: "56% BATTERY HEALTH"; }
+      46.535%  { content: "57% BATTERY HEALTH"; }
+      47.525%  { content: "58% BATTERY HEALTH"; }
+      48.515%  { content: "59% BATTERY HEALTH"; }
+      49.505%  { content: "60% BATTERY HEALTH"; }
+      50.495%  { content: "61% BATTERY HEALTH"; }
+      51.485%  { content: "62% BATTERY HEALTH"; }
+      52.475%  { content: "63% BATTERY HEALTH"; }
+      53.465%  { content: "64% BATTERY HEALTH"; }
+      54.455%  { content: "65% BATTERY HEALTH"; }
+      55.445%  { content: "66% BATTERY HEALTH"; }
+      56.436%  { content: "67% BATTERY HEALTH"; }
+      57.426%  { content: "68% BATTERY HEALTH"; }
+      58.416%  { content: "69% BATTERY HEALTH"; }
+      59.406%  { content: "70% BATTERY HEALTH"; }
+      60.396%  { content: "71% BATTERY HEALTH"; }
+      61.386%  { content: "72% BATTERY HEALTH"; }
+      62.376%  { content: "73% BATTERY HEALTH"; }
+      63.366%  { content: "74% BATTERY HEALTH"; }
+      64.356%  { content: "75% BATTERY HEALTH"; }
+      65.346%  { content: "76% BATTERY HEALTH"; }
+      66.336%  { content: "77% BATTERY HEALTH"; }
+      67.327%  { content: "78% BATTERY HEALTH"; }
+      68.317%  { content: "79% BATTERY HEALTH"; }
+      69.307%  { content: "80% BATTERY HEALTH"; }
+      70.297%  { content: "81% BATTERY HEALTH"; }
+      71.287%  { content: "82% BATTERY HEALTH"; }
+      72.277%  { content: "83% BATTERY HEALTH"; }
+      73.267%  { content: "84% BATTERY HEALTH"; }
+      74.257%  { content: "85% BATTERY HEALTH"; }
+      75.247%  { content: "86% BATTERY HEALTH"; }
+      76.237%  { content: "87% BATTERY HEALTH"; }
+      77.227%  { content: "88% BATTERY HEALTH"; }
+      78.217%  { content: "89% BATTERY HEALTH"; }
+      79.208%  { content: "90% BATTERY HEALTH"; }
+      80.198%  { content: "91% BATTERY HEALTH"; }
+      81.188%  { content: "92% BATTERY HEALTH"; }
+      82.178%  { content: "93% BATTERY HEALTH"; }
+      83.168%  { content: "94% BATTERY HEALTH"; }
+      84.158%  { content: "95% BATTERY HEALTH"; }
+      85.148%  { content: "96% BATTERY HEALTH"; }
+      86.138%  { content: "97% BATTERY HEALTH"; }
+      87.128%  { content: "98% BATTERY HEALTH"; }
+      88.118%  { content: "99% BATTERY HEALTH"; }
+      89.109%  { content: "100% BATTERY HEALTH"; }
+      90.099%  { content: "0% BATTERY HEALTH"; }
+      91.089%  { content: "1% BATTERY HEALTH"; }
+      92.079%  { content: "2% BATTERY HEALTH"; }
+      93.069%  { content: "3% BATTERY HEALTH"; }
+      94.059%  { content: "4% BATTERY HEALTH"; }
+      95.050%  { content: "5% BATTERY HEALTH"; }
+      96.040%  { content: "6% BATTERY HEALTH"; }
+      97.030%  { content: "7% BATTERY HEALTH"; }
+      98.020%  { content: "8% BATTERY HEALTH"; }
+      99.010%  { content: "9% BATTERY HEALTH"; }
+      100%     { content: "10% BATTERY HEALTH"; }
+    }
+
+    /* charging status & cycles */
+    .charging-status,
+    .battery-cycles {
+      display: flex;
+      align-items: center;
+      gap: .55em;
+      font-size: .72rem;
+      color: #b6e5f2;
+    }
+
+    .charging-status span {
+      animation: glowingCharge 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes glowingCharge {
+      0% {
+        color: white;
+      }
+      100% {
+        color: rgba(0, 230, 255, 1);
+        filter: brightness(2) contrast(1.3) saturate(1.4);
+        text-shadow: 5px 5px 25px rgba(0, 230, 255, 1);
+      }
+    }
+
+    /* icons */
+    .icon {
+      width: 1em;
+      height: 1em;
+      flex-shrink: 0;
+      fill: currentColor;
+      stroke: currentColor;
+      filter: drop-shadow(0 0 2px #00ebff);
+    }
+
+    /* battery bar */
+    .battery {
+      margin-left: -11px;
+      width: 175px;
+      height: 7px;
+      border-radius: 4px;
+      background: #444;
+      background-image: linear-gradient(to right, #007a99 0 0, #00e9ff 100% 0);
+      background-repeat: no-repeat;
+      background-size: var(--level, 10%) 100%;
+      --segments: 6;
+      --gap: 2px;
+      mask: repeating-linear-gradient(
+        to right,
+        #fff 0 calc(100% / var(--segments) - var(--gap)),
+        transparent calc(100% / var(--segments) - var(--gap)) calc(100% / var(--segments))
+      );
+      -webkit-mask: repeating-linear-gradient(
+        to right,
+        #fff 0 calc(100% / var(--segments) - var(--gap)),
+        transparent calc(100% / var(--segments) - var(--gap)) calc(100% / var(--segments))
+      );
+      animation: chargeUp 336.6s steps(102) infinite;
+    }
+
+    @keyframes chargeUp {
+      0%   { --level: 10%; }
+      90%  { --level: 100%; }
+      91%  { --level: 0%; }
+      100% { --level: 9%; }
+    }
+
+    @media (max-width: 480px) {
+      .card {
+        position: absolute;
+        top: 0;
+        left: -12%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <!-- bright neon outline -->
+    <svg class="svg-bright"
+         viewBox="0 0 200 200"
+         xmlns="http://www.w3.org/2000/svg"
+         fill="none"
+         stroke="transparent"
+         stroke-width="2"
+         stroke-linecap="round"
+         stroke-linejoin="round">
+      <path d="M 40 44 Q 40 17 71 17 H 136 Q 162 17 162 42
+               V 49 Q 162 73 136 73 H 74 Q 40 73 40 97
+               V 103 Q 40 124 74 124 H 136 Q 163 124 163 102"/>
+    </svg>
+
+    <!-- dimmed outline clipped to the glass window -->
+    <svg class="svg-dimmed"
+         viewBox="0 0 200 200"
+         xmlns="http://www.w3.org/2000/svg"
+         fill="none"
+         stroke="transparent"
+         stroke-width="2"
+         stroke-linecap="round"
+         stroke-linejoin="round">
+      <path d="M 40 44 Q 40 17 71 17 H 136 Q 162 17 162 42
+               V 49 Q 162 73 136 73 H 74 Q 40 73 40 97
+               V 103 Q 40 124 74 124 H 136 Q 163 124 163 102"/>
+    </svg>
+
+    <div class="glass-card">
+      <div class="battery-info">
+        <!-- start at 10% for the CSS counter -->
+        <div class="battery-percentage">10%</div>
+
+        <div class="charging-status">
+          <svg class="icon icon-charging"
+               viewBox="0 0 24 24"
+               xmlns="http://www.w3.org/2000/svg"
+               fill="currentColor">
+            <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+          <span>CHARGING</span>
+        </div>
+
+        <div class="battery-health">
+          <svg class="icon icon-health"
+               viewBox="0 0 24 24"
+               xmlns="http://www.w3.org/2000/svg"
+               fill="none"
+               stroke="currentColor"
+               stroke-width="2">
+            <rect x="1" y="6" width="18" height="12" rx="2" ry="2"/>
+            <line x1="23" y1="13" x2="23" y2="11"/>
+          </svg>
+          <span>10% BATTERY HEALTH</span>
+        </div>
+
+        <div class="battery-cycles">
+          <svg class="icon icon-cycles"
+               viewBox="0 0 24 24"
+               xmlns="http://www.w3.org/2000/svg"
+               fill="currentColor">
+            <path d="M17 1l4 4-4 4v-3H7v-2h10V1z"/>
+            <path d="M7 23l-4-4 4-4v3h10v2H7v3z"/>
+          </svg>
+          <span>215 CYCLES</span>
+        </div>
+
+        <!-- bar can stay at whatever level you choose -->
+        <div class="battery"></div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

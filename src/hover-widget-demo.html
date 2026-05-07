@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neon Hover Widget Demo</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      background: #050a0f; /* 科技感深色背景 */
+      display: grid;
+      place-items: center;
+      font-family: "Inter", "Segoe UI", sans-serif;
+    }
+
+    /* Widget 容器，完全还原原本玻璃面板的尺寸和基础样式 */
+    .widget-box {
+      position: relative;
+      width: 205px;
+      height: 205px;
+      border-radius: 25px;
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      
+      /* 极其关键的玻璃厚度感和底部阴影 */
+      box-shadow:
+        inset 0 0 0.8px rgba(255, 255, 255, 0.55),
+        inset 0 0 18px rgba(255, 255, 255, 0.08),
+        0 10px 24px rgba(0, 0, 0, 0.65);
+      
+      overflow: hidden; /* 关键：裁剪掉外部的辉光，让光晕像在玻璃内部 */
+      z-index: 3;
+      
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      color: #eafdff;
+      font-family: "Inter", "Segoe UI", sans-serif;
+    }
+
+    /* 光泽层与发光边框，完美复原 hover 状态 */
+    .widget-box::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      
+      /* 原版 hover 的核心边框与发光 */
+      border: 1px solid rgba(0, 230, 255, 1);
+      filter: drop-shadow(0px 0px 15px rgba(0, 230, 255, 1));
+      
+      /* 原版 hover 时的内部暗化反光，营造对比度 */
+      background: linear-gradient(125deg,
+        rgba(255, 255, 255, 0.25) 0%,
+        rgba(0, 0, 0, 0.02) 45%,
+        rgba(0, 0, 0, 0.28) 100%);
+      
+      background-size: 220% 220%;
+      animation: sheen 14s ease-in-out infinite;
+      z-index: 1;
+    }
+
+    @keyframes sheen {
+      0%, 100% { background-position: 0 0; }
+      50%      { background-position: 100% 100%; }
+    }
+
+    /* 内容容器，确保层级在光泽层之上 */
+    .content {
+      position: relative;
+      z-index: 4; /* 高于 ::before */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+
+    /* 主数字：原版 hover 状态下变成纯白且无阴影，凸显锐利感 */
+    .main-number {
+      font-size: 46px;
+      font-weight: 700;
+      line-height: 1;
+      color: rgba(255, 255, 255, 1);
+      text-shadow: none;
+      margin-bottom: 4px;
+    }
+
+    /* 状态文字：原版 hover 状态下变亮青色 */
+    .status-text {
+      font-size: 11.5px;
+      color: rgba(0, 230, 255, 1);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .icon {
+      width: 1em;
+      height: 1em;
+      fill: currentColor;
+      filter: drop-shadow(0 0 2px #00ebff);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 这个 Widget 直接展示了原本鼠标悬停时的所有视觉状态 -->
+  <div class="widget-box">
+    <div class="content">
+      <div class="main-number">10%</div>
+      
+      <div class="status-text">
+        <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+        </svg>
+        <span>ACTIVE</span>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
