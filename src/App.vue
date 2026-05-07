@@ -16,17 +16,14 @@
         2. 设备已绑定但没有有效会话时，显示 Cloud 登录授权二维码。
         二者共用二维码 UI，但 activeQrUrl 的来源不同。
       -->
-      <section v-if="showQrPanel" class="qr-section">
-        <div class="qr-frame">
-          <img v-if="qrCodeDataUrl" :src="qrCodeDataUrl" :alt="qrAltText" />
-          <span v-else>正在生成二维码</span>
-        </div>
-        <p class="qr-hint">{{ qrHint }}</p>
-        <div class="actions qr-actions">
-          <button type="button" @click="refreshQr">刷新二维码</button>
-          <button v-if="activeQrUrl" type="button" @click="openActiveQrUrl">打开链接</button>
-        </div>
-      </section>
+      <AuthQrPanel
+        v-if="showQrPanel"
+        :active-url="activeQrUrl"
+        :alt-text="qrAltText"
+        :hint="qrHint"
+        @refresh="refreshQr"
+        @open="openActiveQrUrl"
+      />
 
       <!--
         调试信息默认折叠，避免普通用户被 URL、授权码等细节干扰。
@@ -85,17 +82,14 @@
 </template>
 
 <script setup lang="ts">
-import QRCode from "qrcode";
 import { computed, onMounted, ref, watch } from "vue";
+import AuthQrPanel from "./components/AuthQrPanel.vue";
 import { authManager } from "./services/auth/auth-manager";
 import { authState } from "./services/auth/auth-state";
 
 // 本地账号登录表单字段。只有 Box 已绑定且启用 local_account_setup 时才会显示。
 const username = ref("");
 const password = ref("");
-
-// 当前二维码图片的 data URL。二维码内容由 activeQrUrl 推导，并在 watch 中异步生成。
-const qrCodeDataUrl = ref("");
 
 // 防止多个响应式更新同时触发 Cloud 登录流创建，导致重复请求授权二维码。
 const creatingCloudFlow = ref(false);
@@ -190,7 +184,6 @@ const submitLocalLogin = async () => {
 // - 绑定二维码本质来自 Box initInfo，刷新 Box 状态即可；
 // - 登录二维码来自 Cloud Web Auth，需要重新创建授权流。
 const refreshQr = async () => {
-  qrCodeDataUrl.value = "";
   if (showBindingQr.value) {
     await authManager.forceRefresh();
     return;
@@ -254,26 +247,6 @@ watch(
   { immediate: true },
 );
 
-// 监听当前二维码 URL，并把它渲染成 data URL 图片。
-// activeQrUrl 为空时清空二维码，避免显示过期或错误的旧码。
-watch(
-  activeQrUrl,
-  async (nextUrl) => {
-    qrCodeDataUrl.value = nextUrl
-      ? await QRCode.toDataURL(nextUrl, {
-          errorCorrectionLevel: "M",
-          margin: 2,
-          width: 280,
-          color: {
-            dark: "#05141b",
-            light: "#f4fdff",
-          },
-        })
-      : "";
-  },
-  { immediate: true },
-);
-
 // 应用挂载后启动认证状态机：读取 Box 初始化信息、检查本地 session、启动轮询等。
 onMounted(() => {
   void authManager.boot();
@@ -329,45 +302,6 @@ h1 {
   font-size: clamp(13px, 2.2vh, 16px);
 }
 
-.qr-section {
-  display: grid;
-  justify-items: center;
-  gap: clamp(8px, 1.5vh, 12px);
-  margin: 6px 0 clamp(10px, 2vh, 16px);
-}
-
-/* 二维码使用浅色底，保证手机扫码识别率；外层边框负责和暗色 UI 融合。 */
-.qr-frame {
-  width: min(280px, 44vh, 78vw);
-  aspect-ratio: 1;
-  display: grid;
-  place-items: center;
-  box-sizing: border-box;
-  padding: 10px;
-  border-radius: 20px;
-  border: 1px solid rgba(127, 232, 245, 0.46);
-  background: #f4fdff;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
-}
-
-.qr-frame img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.qr-frame span {
-  color: #05141b;
-  font-weight: 700;
-}
-
-.qr-hint {
-  margin: 0;
-  color: rgba(198, 225, 232, 0.82);
-  font-size: clamp(12px, 2vh, 14px);
-  text-align: center;
-}
-
 .debug-details {
   margin-top: clamp(8px, 1.6vh, 14px);
   border-top: 1px solid rgba(108, 197, 216, 0.22);
@@ -411,11 +345,6 @@ dd {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-}
-
-.qr-actions {
-  justify-content: center;
-  margin-top: 0;
 }
 
 input,
@@ -470,12 +399,6 @@ button:disabled {
     line-height: 1.35;
   }
 
-  .qr-frame {
-    width: min(230px, 38vh, 72vw);
-    padding: 8px;
-    border-radius: 16px;
-  }
-
   .debug-details {
     font-size: 12px;
   }
@@ -496,9 +419,6 @@ button:disabled {
     max-height: calc(100vh - 16px);
   }
 
-  .qr-frame {
-    width: min(190px, 34vh, 68vw);
-  }
 }
 
 @media (max-height: 520px) and (min-width: 560px) {
@@ -525,37 +445,6 @@ button:disabled {
     margin: 0;
     font-size: 12px;
     line-height: 1.3;
-  }
-
-  .qr-section {
-    grid-column: 2;
-    grid-row: 1 / span 4;
-    align-self: center;
-    gap: 6px;
-    margin: 0;
-  }
-
-  .qr-frame {
-    width: min(190px, 52vh, 34vw);
-    padding: 7px;
-    border-radius: 14px;
-  }
-
-  .qr-hint {
-    font-size: 11px;
-    line-height: 1.25;
-  }
-
-  .qr-actions {
-    flex-wrap: nowrap;
-    gap: 8px;
-  }
-
-  .qr-actions button {
-    height: 32px;
-    padding: 0 10px;
-    font-size: 12px;
-    white-space: nowrap;
   }
 
   .debug-details {
