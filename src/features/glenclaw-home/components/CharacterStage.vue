@@ -62,7 +62,7 @@ const characterState = computed(() => deriveCharacterState(props.assistantState)
   display: grid;
   grid-template-rows: minmax(0, 1fr) auto;
   place-items: center;
-  padding: clamp(12px, 2vh, 28px) 0 clamp(18px, 3vh, 34px);
+  padding: var(--ax-page-padding) 0 var(--ax-panel-padding);
 }
 
 .stage-glow,
@@ -72,8 +72,8 @@ const characterState = computed(() => deriveCharacterState(props.assistantState)
 }
 
 .stage-glow {
-  width: min(42vw, 600px);
-  height: min(42vw, 600px);
+  width: var(--ax-stage-glow-size);
+  height: var(--ax-stage-glow-size);
   top: 12%;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(24, 231, 255, 0.1), transparent 62%);
@@ -81,9 +81,9 @@ const characterState = computed(() => deriveCharacterState(props.assistantState)
 }
 
 .floor-ring {
-  width: min(30vw, 390px);
-  height: 92px;
-  bottom: clamp(76px, 10vh, 110px);
+  width: var(--ax-floor-ring-width);
+  height: var(--ax-floor-ring-height);
+  bottom: var(--ax-floor-ring-bottom);
   border-radius: 50%;
   border: 1px solid rgba(24, 231, 255, 0.22);
   background:
@@ -106,30 +106,30 @@ const characterState = computed(() => deriveCharacterState(props.assistantState)
 @media (max-width: 1100px), (max-height: 650px) {
   .character-stage {
     padding-top: 2px;
-    padding-bottom: 14px;
+    padding-bottom: var(--ax-panel-gap);
   }
 
   .floor-ring {
-    bottom: 64px;
+    bottom: var(--ax-floor-ring-bottom);
   }
 }
 
 @media (max-width: 860px), (max-height: 520px) {
   .character-stage {
     padding-top: 2px;
-    padding-bottom: 8px;
+    padding-bottom: var(--ax-panel-gap);
   }
 
   .stage-glow {
-    width: 260px;
-    height: 260px;
+    width: var(--ax-stage-glow-size);
+    height: var(--ax-stage-glow-size);
     top: 12%;
   }
 
   .floor-ring {
-    width: 190px;
-    height: 54px;
-    bottom: 46px;
+    width: var(--ax-floor-ring-width);
+    height: var(--ax-floor-ring-height);
+    bottom: var(--ax-floor-ring-bottom);
   }
 }
 </style>

@@ -167,9 +167,9 @@ const resolvedItems = computed(() => props.items ?? defaultItems);
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: var(--rail-gap);
-  padding: 12px 10px;
-  border-radius: 26px;
+  gap: var(--rail-gap, var(--ax-panel-gap));
+  padding: var(--ax-panel-gap) 10px;
+  border-radius: var(--ax-panel-radius);
   border: 1px solid transparent;
   background:
     linear-gradient(rgba(5, 18, 26, 0.84), rgba(4, 16, 23, 0.84)) padding-box,
@@ -219,7 +219,7 @@ const resolvedItems = computed(() => props.items ?? defaultItems);
   align-items: center;
   gap: 8px;
   width: 100%;
-  min-height: 68px;
+  min-height: calc(var(--ax-control-height) + 28px);
   padding: 12px 6px 10px;
   border: 0;
   border-radius: 18px;
@@ -286,8 +286,23 @@ const resolvedItems = computed(() => props.items ?? defaultItems);
 }
 
 .nav-label {
-  font-size: 11px;
+  font-size: var(--ax-font-micro);
   line-height: 1;
   letter-spacing: 0.01em;
+}
+
+@media (max-width: 900px), (max-height: 540px) {
+  .nav-item {
+    min-height: calc(var(--ax-control-height) + 16px);
+    gap: 5px;
+    padding: 8px 4px;
+    border-radius: var(--ax-control-radius);
+  }
+
+  .nav-icon,
+  .nav-icon svg {
+    width: 20px;
+    height: 20px;
+  }
 }
 </style>

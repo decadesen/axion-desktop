@@ -21,7 +21,7 @@ const resolveBaseUrl = (explicitUrl: string, host: string, port: string) => {
 
 export const resolveRuntimeConfig = (): RuntimeConfig => {
   const env = window.runtime?.env;
-  const configuredBoxBaseUrl = resolveBaseUrl(env?.boxUrl ?? "", env?.boxHost ?? "127.0.0.1", env?.boxPort ?? "18080");
+  const configuredBoxBaseUrl = resolveBaseUrl(env?.boxUrl ?? "", env?.boxHost ?? "127.0.0.1", env?.boxPort ?? "26681");
 
   return {
     boxBaseUrl: import.meta.env.DEV ? "" : configuredBoxBaseUrl,

@@ -44,14 +44,14 @@ const emit = defineEmits<{
   min-width: 0;
   display: flex;
   align-items: center;
-  padding: clamp(14px, 3vh, 34px) clamp(14px, 1.6vw, 26px) clamp(14px, 3vh, 34px) 0;
+  padding: var(--ax-page-padding) var(--ax-home-left-padding-inline) var(--ax-page-padding) 0;
   overflow: hidden;
 }
 
 @media (max-width: 1100px), (max-height: 650px) {
   .conversation-bubble-area {
-    padding-block: 18px;
-    padding-right: 18px;
+    padding-block: var(--ax-page-padding);
+    padding-right: var(--ax-home-left-padding-inline);
   }
 
   .bubble-stack {
@@ -61,7 +61,7 @@ const emit = defineEmits<{
 
 @media (max-width: 860px), (max-height: 520px) {
   .conversation-bubble-area {
-    padding: 10px 8px 10px 0;
+    padding: var(--ax-home-left-padding-block) var(--ax-home-left-padding-inline) var(--ax-home-left-padding-block) 0;
   }
 }
 </style>

@@ -41,21 +41,21 @@ const emit = defineEmits<{
   min-width: 0;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
-  gap: clamp(14px, 2.5vh, 32px);
-  padding: clamp(18px, 4.5vh, 56px) clamp(14px, 2vw, 32px);
+  gap: var(--ax-panel-gap);
+  padding: var(--ax-home-left-padding-block) var(--ax-home-left-padding-inline);
 }
 
 @media (max-height: 650px) {
   .left-status-panel {
-    gap: 14px;
-    padding-block: 20px;
+    gap: var(--ax-panel-gap);
+    padding-block: var(--ax-home-left-padding-block);
   }
 }
 
 @media (max-width: 860px), (max-height: 520px) {
   .left-status-panel {
-    gap: 8px;
-    padding: 10px 8px;
+    gap: var(--ax-panel-gap);
+    padding: var(--ax-home-left-padding-block) var(--ax-home-left-padding-inline);
   }
 }
 </style>

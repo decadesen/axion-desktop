@@ -1,0 +1,43 @@
+:root {
+  --ax-screen-min-width: 800px;
+  --ax-screen-min-height: 480px;
+
+  --ax-page-padding: 22px;
+  --ax-page-gap: 18px;
+  --ax-panel-padding: 18px;
+  --ax-panel-gap: 14px;
+  --ax-control-height: 40px;
+  --ax-control-radius: 12px;
+  --ax-panel-radius: 18px;
+  --ax-card-radius: 16px;
+
+  --ax-font-title: 24px;
+  --ax-font-section-title: 18px;
+  --ax-font-body: 14px;
+  --ax-font-caption: 12px;
+  --ax-font-micro: 11px;
+  --ax-line-body: 1.48;
+
+  --ax-auth-panel-width: 460px;
+  --ax-qr-size: 260px;
+  --ax-qr-padding: 10px;
+
+  --ax-home-left-width: 240px;
+  --ax-home-right-width: 360px;
+  --ax-home-left-padding-block: 40px;
+  --ax-home-left-padding-inline: 22px;
+  --ax-home-column-gap: 0px;
+  --ax-time-card-min-height: 136px;
+  --ax-time-font: 68px;
+  --ax-date-font: 18px;
+  --ax-stage-glow-size: 460px;
+  --ax-floor-ring-width: 320px;
+  --ax-floor-ring-height: 78px;
+  --ax-floor-ring-bottom: 78px;
+  --ax-voice-height: 64px;
+  --ax-voice-label-font: 18px;
+
+  --ax-settings-sidebar-width: 240px;
+  --ax-list-max-height: 250px;
+  --ax-modal-padding: 16px;
+}

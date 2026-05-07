@@ -52,18 +52,18 @@ watch(
 .qr-section {
   display: grid;
   justify-items: center;
-  gap: clamp(8px, 1.5vh, 12px);
-  margin: 6px 0 clamp(10px, 2vh, 16px);
+  gap: var(--ax-panel-gap);
+  margin: 6px 0 var(--ax-panel-gap);
 }
 
 .qr-frame {
-  width: min(280px, 44vh, 78vw);
+  width: min(var(--ax-qr-size), 44vh, 78vw);
   aspect-ratio: 1;
   display: grid;
   place-items: center;
   box-sizing: border-box;
-  padding: 10px;
-  border-radius: 20px;
+  padding: var(--ax-qr-padding);
+  border-radius: var(--ax-panel-radius);
   border: 1px solid rgba(127, 232, 245, 0.46);
   background: #f4fdff;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
@@ -83,14 +83,15 @@ watch(
 .qr-hint {
   margin: 0;
   color: rgba(198, 225, 232, 0.82);
-  font-size: clamp(12px, 2vh, 14px);
+  font-size: var(--ax-font-caption);
+  line-height: var(--ax-line-body);
   text-align: center;
 }
 
 .actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: var(--ax-panel-gap);
 }
 
 .qr-actions {
@@ -99,14 +100,15 @@ watch(
 }
 
 button {
-  height: 38px;
+  height: var(--ax-control-height);
   box-sizing: border-box;
   border: 1px solid rgba(93, 185, 202, 0.36);
-  border-radius: 10px;
+  border-radius: var(--ax-control-radius);
   padding: 0 14px;
   color: rgba(214, 242, 248, 0.95);
   background: rgba(7, 32, 47, 0.86);
   cursor: pointer;
+  font-size: var(--ax-font-body);
 }
 
 button:disabled {
@@ -116,19 +118,17 @@ button:disabled {
 
 @media (max-height: 640px) {
   .qr-frame {
-    width: min(230px, 38vh, 72vw);
-    padding: 8px;
-    border-radius: 16px;
+    width: min(var(--ax-qr-size), 38vh, 72vw);
   }
 
   button {
-    height: 34px;
+    height: var(--ax-control-height);
   }
 }
 
 @media (max-height: 520px) {
   .qr-frame {
-    width: min(190px, 34vh, 68vw);
+    width: min(var(--ax-qr-size), 34vh, 68vw);
   }
 }
 
@@ -142,13 +142,10 @@ button:disabled {
   }
 
   .qr-frame {
-    width: min(190px, 52vh, 34vw);
-    padding: 7px;
-    border-radius: 14px;
+    width: min(var(--ax-qr-size), 52vh, 34vw);
   }
 
   .qr-hint {
-    font-size: 11px;
     line-height: 1.25;
   }
 
@@ -158,9 +155,8 @@ button:disabled {
   }
 
   .qr-actions button {
-    height: 32px;
+    height: var(--ax-control-height);
     padding: 0 10px;
-    font-size: 12px;
     white-space: nowrap;
   }
 }

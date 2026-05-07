@@ -67,7 +67,7 @@ const waveBars = computed(() => {
   position: relative;
   z-index: 4;
   width: min(92%, 560px);
-  min-height: clamp(54px, 8vh, 86px);
+  min-height: var(--ax-voice-height);
   display: grid;
   grid-template-columns: 1fr clamp(38px, 5vw, 64px) 1fr;
   grid-template-rows: auto auto;
@@ -168,7 +168,7 @@ svg {
   grid-row: 2;
   justify-self: center;
   color: currentColor;
-  font-size: clamp(16px, 1.8vw, 22px);
+  font-size: var(--ax-voice-label-font);
   line-height: 1;
   text-shadow: 0 0 14px rgba(24, 231, 255, 0.62);
 }
@@ -186,7 +186,7 @@ svg {
 @media (max-width: 860px), (max-height: 520px) {
   .voice-indicator {
     width: 94%;
-    min-height: 42px;
+    min-height: var(--ax-voice-height);
     grid-template-columns: 1fr 34px 1fr;
     gap: 0 8px;
   }
@@ -207,7 +207,7 @@ svg {
   }
 
   .voice-label {
-    font-size: 13px;
+    font-size: var(--ax-voice-label-font);
   }
 }
 </style>

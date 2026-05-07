@@ -670,10 +670,12 @@ onMounted(() => {
 .settings-page {
   width: 100vw;
   height: 100vh;
+  min-width: var(--ax-screen-min-width);
+  min-height: var(--ax-screen-min-height);
   display: grid;
-  grid-template-columns: 240px minmax(0, 1fr);
-  gap: 18px;
-  padding: 22px;
+  grid-template-columns: var(--ax-settings-sidebar-width) minmax(0, 1fr);
+  gap: var(--ax-page-gap);
+  padding: var(--ax-page-padding);
   overflow: hidden;
   color: #dcecf2;
   background:
@@ -686,7 +688,7 @@ onMounted(() => {
 .settings-detail {
   min-height: 0;
   border: 1px solid rgba(108, 197, 216, 0.36);
-  border-radius: 24px;
+  border-radius: var(--ax-panel-radius);
   background:
     radial-gradient(240px 140px at 28% 0%, rgba(81, 162, 184, 0.18), transparent 72%),
     linear-gradient(180deg, rgba(8, 28, 38, 0.76), rgba(3, 14, 21, 0.82));
@@ -698,7 +700,7 @@ onMounted(() => {
 .settings-sidebar {
   display: flex;
   flex-direction: column;
-  padding: 16px;
+  padding: var(--ax-panel-padding);
 }
 
 .back-button,
@@ -707,8 +709,9 @@ onMounted(() => {
 .control-card button,
 .mini-actions button {
   border: 1px solid rgba(93, 185, 202, 0.36);
-  border-radius: 12px;
-  padding: 8px 12px;
+  border-radius: var(--ax-control-radius);
+  min-height: var(--ax-control-height);
+  padding: 0 12px;
   color: rgba(214, 242, 248, 0.95);
   background: rgba(7, 32, 47, 0.86);
   cursor: pointer;
@@ -720,7 +723,7 @@ button:disabled {
 }
 
 .settings-title {
-  margin: 18px 0 14px;
+  margin: var(--ax-page-gap) 0 var(--ax-panel-gap);
 }
 
 .settings-title span,
@@ -728,7 +731,7 @@ button:disabled {
 .setting-card span,
 .control-card span {
   color: rgba(104, 231, 244, 0.9);
-  font-size: 11px;
+  font-size: var(--ax-font-micro);
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -737,7 +740,7 @@ button:disabled {
 .settings-title h1,
 .detail-header h2 {
   margin: 7px 0 0;
-  font-size: 24px;
+  font-size: var(--ax-font-title);
   line-height: 1.1;
 }
 
@@ -750,10 +753,10 @@ button:disabled {
 .settings-list-item {
   width: 100%;
   display: block;
-  margin-bottom: 9px;
-  padding: 12px;
+  margin-bottom: var(--ax-panel-gap);
+  padding: var(--ax-panel-gap);
   border: 1px solid rgba(88, 159, 177, 0.26);
-  border-radius: 16px;
+  border-radius: var(--ax-card-radius);
   color: inherit;
   text-align: left;
   background: rgba(6, 24, 33, 0.52);
@@ -772,7 +775,7 @@ button:disabled {
 .wifi-row strong {
   display: block;
   color: rgba(228, 247, 251, 0.96);
-  font-size: 15px;
+  font-size: var(--ax-font-body);
 }
 
 .settings-list-item span,
@@ -784,12 +787,12 @@ button:disabled {
   display: block;
   margin-top: 6px;
   color: rgba(169, 199, 210, 0.8);
-  font-size: 11px;
-  line-height: 1.45;
+  font-size: var(--ax-font-caption);
+  line-height: var(--ax-line-body);
 }
 
 .settings-detail {
-  padding: 22px;
+  padding: var(--ax-page-padding);
   overflow: auto;
 }
 
@@ -803,13 +806,13 @@ button:disabled {
 }
 
 .detail-header {
-  padding-bottom: 18px;
+  padding-bottom: var(--ax-page-gap);
   border-bottom: 1px solid rgba(103, 180, 198, 0.2);
 }
 
 .status-line {
   margin: 12px 0 0;
-  font-size: 12px;
+  font-size: var(--ax-font-caption);
 }
 
 .status-line.ok {
@@ -822,26 +825,26 @@ button:disabled {
 
 .detail-grid,
 .panel-stack {
-  margin-top: 18px;
+  margin-top: var(--ax-page-gap);
 }
 
 .detail-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: var(--ax-panel-gap);
 }
 
 .panel-stack {
   display: grid;
-  gap: 12px;
+  gap: var(--ax-panel-gap);
 }
 
 .setting-card,
 .control-card {
   min-width: 0;
-  padding: 15px;
+  padding: var(--ax-panel-padding);
   border: 1px solid rgba(88, 159, 177, 0.26);
-  border-radius: 16px;
+  border-radius: var(--ax-card-radius);
   background: rgba(6, 24, 33, 0.52);
 }
 
@@ -872,7 +875,7 @@ button:disabled {
   display: grid;
   gap: 8px;
   margin-top: 12px;
-  max-height: 250px;
+  max-height: var(--ax-list-max-height);
   overflow: auto;
 }
 
@@ -1017,7 +1020,7 @@ input[type="text"],
 input[type="password"],
 input:not([type]) {
   width: 100%;
-  height: 36px;
+  height: var(--ax-control-height);
   border: 1px solid rgba(88, 159, 177, 0.3);
   border-radius: 10px;
   padding: 0 10px;
@@ -1059,17 +1062,17 @@ input[type="range"] {
   z-index: 50;
   display: grid;
   place-items: center;
-  padding: 16px;
+  padding: var(--ax-modal-padding);
   background: rgba(0, 7, 12, 0.64);
   backdrop-filter: blur(10px);
 }
 
 .wifi-dialog {
   width: min(720px, 100%);
-  max-height: calc(100vh - 32px);
+  max-height: calc(100vh - (var(--ax-modal-padding) * 2));
   display: grid;
-  gap: 12px;
-  padding: 16px;
+  gap: var(--ax-panel-gap);
+  padding: var(--ax-modal-padding);
   overflow: auto;
   border: 1px solid rgba(108, 197, 216, 0.48);
   border-radius: 18px;
@@ -1155,7 +1158,7 @@ input[type="range"] {
 .keyboard-tools button,
 .wifi-dialog-header button,
 .wifi-dialog-actions button {
-  min-height: 38px;
+  min-height: var(--ax-control-height);
   border: 1px solid rgba(93, 185, 202, 0.36);
   border-radius: 10px;
   padding: 0 11px;
@@ -1217,14 +1220,14 @@ input[type="range"] {
 
 @media (max-width: 860px), (max-height: 520px) {
   .settings-page {
-    grid-template-columns: 190px minmax(0, 1fr);
-    gap: 12px;
-    padding: 14px;
+    grid-template-columns: var(--ax-settings-sidebar-width) minmax(0, 1fr);
+    gap: var(--ax-page-gap);
+    padding: var(--ax-page-padding);
   }
 
   .settings-sidebar,
   .settings-detail {
-    padding: 12px;
+    padding: var(--ax-panel-padding);
   }
 
   .detail-grid,
@@ -1250,14 +1253,14 @@ input[type="range"] {
   }
 
   .wifi-dialog-backdrop {
-    padding: 8px;
+    padding: var(--ax-modal-padding);
   }
 
   .wifi-dialog {
-    max-height: calc(100vh - 16px);
-    gap: 9px;
-    padding: 11px;
-    border-radius: 14px;
+    max-height: calc(100vh - (var(--ax-modal-padding) * 2));
+    gap: var(--ax-panel-gap);
+    padding: var(--ax-modal-padding);
+    border-radius: var(--ax-panel-radius);
   }
 
   .keyboard-row {
@@ -1266,7 +1269,7 @@ input[type="range"] {
 
   .keyboard-key {
     min-width: 30px;
-    min-height: 32px;
+    min-height: var(--ax-control-height);
     padding: 0 7px;
     font-size: 12px;
   }

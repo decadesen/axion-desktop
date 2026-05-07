@@ -46,11 +46,12 @@ const dateText = computed(() =>
 <style scoped>
 .time-card {
   position: relative;
-  min-height: clamp(118px, 18vh, 178px);
-  padding: clamp(18px, 3vh, 34px) clamp(18px, 2.8vw, 32px);
+  min-height: var(--ax-time-card-min-height);
+  padding: var(--ax-panel-padding);
   border: 1px solid rgba(137, 191, 230, 0.42);
   border-right-color: rgba(24, 231, 255, 0.64);
-  border-radius: 22px 28px 52px 28px;
+  border-radius: var(--ax-panel-radius) calc(var(--ax-panel-radius) + 6px) calc(var(--ax-panel-radius) + 24px)
+    calc(var(--ax-panel-radius) + 6px);
   background:
     radial-gradient(220px 120px at 16% 0%, rgba(118, 178, 238, 0.16), transparent 70%),
     linear-gradient(180deg, rgba(4, 12, 25, 0.88), rgba(3, 11, 20, 0.7));
@@ -69,7 +70,7 @@ const dateText = computed(() =>
 
 .time-row strong {
   color: #f7fbff;
-  font-size: clamp(54px, 7vw, 96px);
+  font-size: var(--ax-time-font);
   font-weight: 300;
   line-height: 0.92;
   letter-spacing: -0.08em;
@@ -87,16 +88,16 @@ const dateText = computed(() =>
 p {
   margin: 10px 0 0;
   color: rgba(235, 242, 255, 0.68);
-  font-size: clamp(18px, 2vw, 27px);
+  font-size: var(--ax-date-font);
   font-weight: 400;
   letter-spacing: -0.04em;
 }
 
 @media (max-width: 860px), (max-height: 520px) {
   .time-card {
-    min-height: 74px;
-    padding: 12px 13px;
-    border-radius: 16px 20px 32px 18px;
+    min-height: var(--ax-time-card-min-height);
+    padding: var(--ax-panel-padding);
+    border-radius: var(--ax-panel-radius);
   }
 
   .time-row {
@@ -104,7 +105,6 @@ p {
   }
 
   .time-row strong {
-    font-size: 38px;
     letter-spacing: -0.07em;
   }
 
@@ -115,7 +115,6 @@ p {
 
   p {
     margin-top: 5px;
-    font-size: 13px;
   }
 }
 </style>

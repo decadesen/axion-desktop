@@ -27,12 +27,12 @@ const emit = defineEmits<{
 <style scoped>
 .settings-button {
   width: 100%;
-  min-height: clamp(72px, 11vh, 104px);
+  min-height: calc(var(--ax-control-height) + var(--ax-panel-padding) * 2);
   display: grid;
-  grid-template-columns: clamp(42px, 4.4vw, 58px) minmax(0, 1fr) 24px;
-  gap: clamp(12px, 1.8vw, 22px);
+  grid-template-columns: calc(var(--ax-control-height) + 10px) minmax(0, 1fr) 24px;
+  gap: var(--ax-panel-gap);
   align-items: center;
-  padding: clamp(13px, 1.8vw, 22px);
+  padding: var(--ax-panel-padding);
   border: 1px solid rgba(165, 196, 236, 0.42);
   border-radius: 20px;
   color: #f4f8ff;
@@ -64,7 +64,7 @@ svg {
 
 span {
   color: rgba(250, 253, 255, 0.96);
-  font-size: clamp(21px, 2.2vw, 30px);
+  font-size: var(--ax-font-section-title);
 }
 
 i {
@@ -77,11 +77,11 @@ i {
 
 @media (max-width: 860px), (max-height: 520px) {
   .settings-button {
-    min-height: 54px;
+    min-height: calc(var(--ax-control-height) + var(--ax-panel-padding));
     grid-template-columns: 32px minmax(0, 1fr) 14px;
-    gap: 8px;
-    padding: 9px 10px;
-    border-radius: 15px;
+    gap: var(--ax-panel-gap);
+    padding: var(--ax-panel-padding);
+    border-radius: var(--ax-panel-radius);
   }
 
   svg {
@@ -90,7 +90,7 @@ i {
   }
 
   span {
-    font-size: 16px;
+    font-size: var(--ax-font-section-title);
   }
 
   i {

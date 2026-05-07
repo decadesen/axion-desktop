@@ -58,9 +58,11 @@ const timeline = computed(() => [
 .task-page {
   width: 100vw;
   height: 100vh;
+  min-width: var(--ax-screen-min-width);
+  min-height: var(--ax-screen-min-height);
   overflow: hidden;
   box-sizing: border-box;
-  padding: 22px;
+  padding: var(--ax-page-padding);
   color: #dcecf2;
   font-family:
     "Noto Sans CJK SC",
@@ -79,14 +81,15 @@ const timeline = computed(() => [
 .task-header {
   display: flex;
   align-items: center;
-  gap: 18px;
-  height: 86px;
+  gap: var(--ax-page-gap);
+  height: calc(var(--ax-control-height) + var(--ax-page-gap) * 2);
 }
 
 .back-button {
   border: 1px solid rgba(93, 185, 202, 0.36);
-  border-radius: 14px;
-  padding: 9px 12px;
+  border-radius: var(--ax-control-radius);
+  min-height: var(--ax-control-height);
+  padding: 0 12px;
   color: rgba(214, 242, 248, 0.92);
   background: rgba(6, 24, 33, 0.62);
   cursor: pointer;
@@ -95,7 +98,7 @@ const timeline = computed(() => [
 .task-header span,
 .surface-kicker {
   color: rgba(104, 231, 244, 0.9);
-  font-size: 11px;
+  font-size: var(--ax-font-micro);
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -105,15 +108,15 @@ const timeline = computed(() => [
 .task-surface h2 {
   margin: 7px 0 0;
   color: rgba(228, 247, 251, 0.96);
-  font-size: 25px;
+  font-size: var(--ax-font-title);
   line-height: 1.1;
 }
 
 .task-body {
   display: grid;
-  grid-template-columns: 260px minmax(0, 1fr);
-  gap: 18px;
-  height: calc(100% - 86px);
+  grid-template-columns: minmax(180px, var(--ax-settings-sidebar-width)) minmax(0, 1fr);
+  gap: var(--ax-page-gap);
+  height: calc(100% - (var(--ax-control-height) + var(--ax-page-gap) * 2));
   min-height: 0;
 }
 
@@ -121,7 +124,7 @@ const timeline = computed(() => [
 .task-surface {
   min-height: 0;
   border: 1px solid rgba(108, 197, 216, 0.36);
-  border-radius: 24px;
+  border-radius: var(--ax-panel-radius);
   background:
     radial-gradient(240px 140px at 28% 0%, rgba(81, 162, 184, 0.18), transparent 72%),
     linear-gradient(180deg, rgba(8, 28, 38, 0.76), rgba(3, 14, 21, 0.82));
@@ -131,7 +134,7 @@ const timeline = computed(() => [
 }
 
 .task-timeline {
-  padding: 18px;
+  padding: var(--ax-panel-padding);
 }
 
 .timeline-item {
@@ -141,7 +144,7 @@ const timeline = computed(() => [
   align-items: center;
   min-height: 42px;
   color: rgba(169, 199, 210, 0.82);
-  font-size: 13px;
+  font-size: var(--ax-font-body);
 }
 
 .timeline-item i {
@@ -162,14 +165,14 @@ const timeline = computed(() => [
 }
 
 .task-surface {
-  padding: 24px;
+  padding: var(--ax-page-padding);
 }
 
 .task-surface p {
   max-width: 520px;
   margin: 12px 0 0;
   color: rgba(169, 199, 210, 0.82);
-  font-size: 13px;
-  line-height: 1.7;
+  font-size: var(--ax-font-body);
+  line-height: var(--ax-line-body);
 }
 </style>

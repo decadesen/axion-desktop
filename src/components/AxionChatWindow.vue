@@ -255,7 +255,7 @@ onMounted(() => {
   box-sizing: border-box;
   min-height: 0;
   max-height: 100%;
-  border-radius: 24px;
+  border-radius: var(--ax-panel-radius);
   border: 3px solid transparent;
   font-family:
     "Noto Sans CJK SC",
@@ -336,8 +336,8 @@ onMounted(() => {
 
 .chat-titlebar {
   position: relative;
-  flex: 0 0 60px;
-  padding: 0 32px;
+  flex: 0 0 calc(var(--ax-control-height) + var(--ax-panel-gap));
+  padding: 0 var(--ax-panel-padding);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -369,7 +369,7 @@ onMounted(() => {
 .chat-title {
   margin: 0;
   color: var(--text-main);
-  font-size: 24px;
+  font-size: var(--ax-font-title);
   line-height: 1;
   font-weight: 600;
   letter-spacing: 0.2px;
@@ -405,7 +405,7 @@ onMounted(() => {
 .message-area {
   flex: 1 1 auto;
   min-height: 0;
-  padding: 18px 34px 12px;
+  padding: var(--ax-panel-padding);
   box-sizing: border-box;
   overflow: auto;
   scrollbar-width: thin;
@@ -433,7 +433,7 @@ onMounted(() => {
 }
 
 .message {
-  margin-bottom: 28px;
+  margin-bottom: calc(var(--ax-panel-gap) * 2);
 }
 
 .message.assistant {
@@ -510,8 +510,8 @@ onMounted(() => {
 
 .user-bubble {
   display: inline-block;
-  max-width: 310px;
-  padding: 14px 18px;
+  max-width: min(310px, 72%);
+  padding: var(--ax-panel-gap) var(--ax-panel-padding);
   background: linear-gradient(
     180deg,
     rgba(26, 63, 80, 0.88) 0%,
@@ -520,8 +520,8 @@ onMounted(() => {
   border: 1px solid rgba(80, 145, 165, 0.14);
   border-radius: 9px;
   color: var(--text-main);
-  font-size: 16px;
-  line-height: 1.55;
+  font-size: var(--ax-font-body);
+  line-height: var(--ax-line-body);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.035),
     0 8px 24px rgba(0, 0, 0, 0.16);
@@ -534,8 +534,8 @@ onMounted(() => {
 .assistant-text {
   margin: 0;
   color: var(--text-main);
-  font-size: 16px;
-  line-height: 1.75;
+  font-size: var(--ax-font-body);
+  line-height: var(--ax-line-body);
   letter-spacing: 0.1px;
 }
 
@@ -552,7 +552,7 @@ onMounted(() => {
 }
 
 .code-card {
-  width: 564px;
+  width: min(564px, 100%);
   margin-top: 14px;
   border-radius: 8px;
   overflow: hidden;
@@ -598,9 +598,9 @@ onMounted(() => {
 }
 
 .chat-composer {
-  flex: 0 0 64px;
-  min-height: 64px;
-  padding: 0 32px 16px;
+  flex: 0 0 calc(var(--ax-control-height) + var(--ax-panel-padding));
+  min-height: calc(var(--ax-control-height) + var(--ax-panel-padding));
+  padding: 0 var(--ax-panel-padding) var(--ax-panel-gap);
   box-sizing: border-box;
   display: flex;
   align-items: center;
@@ -609,7 +609,7 @@ onMounted(() => {
 
 .chat-input-shell {
   width: min(100%, 352px);
-  height: 42px;
+  height: var(--ax-control-height);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -632,7 +632,7 @@ onMounted(() => {
 
 .chat-idle-copy {
   color: rgba(190, 212, 220, 0.76);
-  font-size: 14px;
+  font-size: var(--ax-font-body);
   line-height: 1;
   letter-spacing: 0.02em;
   text-align: center;
@@ -682,6 +682,28 @@ onMounted(() => {
   50% {
     transform: scaleY(1.18);
     opacity: 1;
+  }
+}
+
+@media (max-width: 900px), (max-height: 540px) {
+  .message.assistant {
+    grid-template-columns: 34px 1fr;
+    column-gap: var(--ax-panel-gap);
+  }
+
+  .message.user {
+    grid-template-columns: 1fr 34px;
+    column-gap: var(--ax-panel-gap);
+  }
+
+  .avatar {
+    width: 32px;
+    height: 32px;
+  }
+
+  .meta {
+    margin-bottom: 6px;
+    font-size: var(--ax-font-caption);
   }
 }
 </style>

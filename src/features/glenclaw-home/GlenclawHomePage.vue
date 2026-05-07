@@ -118,9 +118,14 @@ onBeforeUnmount(() => {
   position: relative;
   width: 100vw;
   height: 100vh;
-  min-width: 0;
+  min-width: var(--ax-screen-min-width);
+  min-height: var(--ax-screen-min-height);
   display: grid;
-  grid-template-columns: minmax(240px, 25%) minmax(320px, 1fr) minmax(360px, 35%);
+  grid-template-columns:
+    var(--ax-home-left-width)
+    minmax(0, 1fr)
+    var(--ax-home-right-width);
+  column-gap: var(--ax-home-column-gap);
   overflow: hidden;
   background: var(--bg-main);
   color: var(--text-primary);
@@ -142,21 +147,4 @@ onBeforeUnmount(() => {
   filter: saturate(0.7);
 }
 
-@media (max-width: 1120px) {
-  .glenclaw-home-page {
-    grid-template-columns: minmax(220px, 27%) minmax(300px, 1fr) minmax(320px, 34%);
-  }
-}
-
-@media (max-width: 1040px), (max-height: 620px) {
-  .glenclaw-home-page {
-    grid-template-columns: 220px minmax(240px, 1fr) 320px;
-  }
-}
-
-@media (max-width: 860px), (max-height: 520px) {
-  .glenclaw-home-page {
-    grid-template-columns: 180px minmax(250px, 1fr) 270px;
-  }
-}
 </style>

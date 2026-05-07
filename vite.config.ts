@@ -1,7 +1,7 @@
 import { defineConfig } from 'vitest/config'
 import vue from '@vitejs/plugin-vue'
 
-const boxProxyTarget = process.env.PET_BOX_URL || "http://192.168.209.231:26681"
+const boxProxyTarget = process.env.PET_BOX_URL || "http://127.0.0.1:26681"
 const deviceProxyTarget = process.env.PET_DEVICE_URL || "http://127.0.0.1:17890"
 
 // https://vite.dev/config/

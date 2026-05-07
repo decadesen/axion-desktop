@@ -66,8 +66,8 @@ import { computed } from "vue";
 .axion-system-card {
   position: relative;
   box-sizing: border-box;
-  padding: 14px 14px 16px;
-  border-radius: 16px;
+  padding: var(--ax-panel-padding);
+  border-radius: var(--ax-card-radius);
   border: 1px solid rgba(0, 230, 255, 0.86);
   background:
     linear-gradient(
@@ -116,7 +116,7 @@ import { computed } from "vue";
 
 .card-header {
   color: rgba(225, 239, 245, 0.92);
-  font-size: 11px;
+  font-size: var(--ax-font-micro);
   line-height: 1.1;
   font-weight: 600;
 }
@@ -124,8 +124,8 @@ import { computed } from "vue";
 .metric-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
-  margin-top: 14px;
+  gap: var(--ax-panel-gap);
+  margin-top: var(--ax-panel-gap);
 }
 
 .metric-item {
@@ -175,7 +175,7 @@ import { computed } from "vue";
 
 .metric-label {
   color: rgba(158, 183, 194, 0.86);
-  font-size: 10px;
+  font-size: var(--ax-font-micro);
   line-height: 1;
 }
 </style>

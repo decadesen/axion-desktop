@@ -2,7 +2,9 @@ const { app, BrowserWindow, screen } = require("electron");
 const path = require("node:path");
 
 const isDev = Boolean(process.env.VITE_DEV_SERVER_URL);
-const kioskMode = !isDev && process.env.PET_KIOSK !== "false";
+const forceKioskMode = process.env.ELECTRON_KIOSK_MODE === "true";
+const kioskMode = forceKioskMode || (!isDev && process.env.PET_KIOSK !== "false");
+const openDevTools = process.env.ELECTRON_OPEN_DEVTOOLS === "true";
 const ozonePlatform = process.platform === "linux" ? (process.env.OZONE_PLATFORM || "wayland") : null;
 let mainWindow = null;
 
@@ -118,7 +120,9 @@ const createWindow = async () => {
 
   if (isDev) {
     await mainWindow.loadURL(process.env.VITE_DEV_SERVER_URL);
-    mainWindow.webContents.openDevTools({ mode: "detach" });
+    if (openDevTools) {
+      mainWindow.webContents.openDevTools({ mode: "detach" });
+    }
   } else {
     await mainWindow.loadFile(path.join(__dirname, "..", "dist", "index.html"));
   }

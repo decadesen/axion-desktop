@@ -12,6 +12,7 @@ dist
 dist-ssr
 coverage
 artifacts/
+.playwright-mcp/
 axion-fbgrab.png
 *.local
 

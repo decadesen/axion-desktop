@@ -117,7 +117,6 @@ export const requestBox = async <TResponse, TBody = unknown>(
 export const getBoxInitInfo = async (): Promise<BoxInitInfo> => {
   const response = await requestBox<{ init_info: BoxInitInfo }>("/api/v1/bootstrap/_get", {
     body: {},
-    skipAuth: true,
   });
   return response.init_info;
 };
@@ -125,7 +124,6 @@ export const getBoxInitInfo = async (): Promise<BoxInitInfo> => {
 export const pollBoxInitInfo = async (): Promise<BoxInitInfo> => {
   const response = await requestBox<{ init_info: BoxInitInfo }>("/api/v1/bootstrap/_poll", {
     body: {},
-    skipAuth: true,
   });
   return response.init_info;
 };
