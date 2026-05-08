@@ -3,11 +3,19 @@
     <div class="qr-frame">
       <img v-if="qrCodeDataUrl" :src="qrCodeDataUrl" :alt="altText" />
       <span v-else>正在生成二维码</span>
+      <div v-if="expired" class="qr-expired-overlay">
+        <strong>绑定码已过期</strong>
+        <button type="button" :disabled="refreshing" @click="emit('refresh')">
+          {{ refreshing ? "刷新中..." : "刷新绑定码" }}
+        </button>
+      </div>
     </div>
     <p class="qr-hint">{{ hint }}</p>
     <div class="actions qr-actions">
-      <button type="button" @click="emit('refresh')">刷新二维码</button>
-      <button v-if="activeUrl" type="button" @click="emit('open')">打开链接</button>
+      <button type="button" :disabled="refreshing" @click="emit('refresh')">
+        {{ expired ? "刷新绑定码" : "刷新二维码" }}
+      </button>
+      <button v-if="activeUrl" type="button" :disabled="expired" @click="emit('open')">打开链接</button>
     </div>
   </section>
 </template>
@@ -20,6 +28,8 @@ const props = defineProps<{
   activeUrl: string;
   altText: string;
   hint: string;
+  expired?: boolean;
+  refreshing?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -57,6 +67,7 @@ watch(
 }
 
 .qr-frame {
+  position: relative;
   width: min(var(--ax-qr-size), 44vh, 78vw);
   aspect-ratio: 1;
   display: grid;
@@ -67,6 +78,7 @@ watch(
   border: 1px solid rgba(127, 232, 245, 0.46);
   background: #f4fdff;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
+  overflow: hidden;
 }
 
 .qr-frame img {
@@ -77,6 +89,32 @@ watch(
 
 .qr-frame span {
   color: #05141b;
+  font-weight: 700;
+}
+
+.qr-expired-overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 12px;
+  padding: 18px;
+  color: #f4fdff;
+  background: rgba(2, 12, 18, 0.66);
+  backdrop-filter: blur(3px);
+}
+
+.qr-expired-overlay strong {
+  font-size: var(--ax-font-title);
+  line-height: var(--ax-line-tight);
+  text-align: center;
+}
+
+.qr-expired-overlay button {
+  border-color: rgba(127, 232, 245, 0.72);
+  color: #04202b;
+  background: #7fe8f5;
   font-weight: 700;
 }
 

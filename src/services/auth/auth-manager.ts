@@ -3,6 +3,7 @@ import {
   isBindingLostError,
   isUnauthorizedError,
   pollBoxInitInfo,
+  resetBoxBinding,
 } from "./box-api";
 import { clearBoxSession, saveBoxSession } from "./session-storage";
 import { loadStaticFrontendSession } from "./static-token";
@@ -43,6 +44,17 @@ class AuthManager {
 
   async forceRefresh(): Promise<void> {
     await this.boot();
+  }
+
+  async resetBinding(): Promise<void> {
+    this.stopBindingPoll();
+    setAuthStage("checking");
+    try {
+      const initInfo = await resetBoxBinding();
+      this.applyInitInfo(initInfo);
+    } catch (error) {
+      this.handleRuntimeError(error);
+    }
   }
 
   async startCloudLogin(_options: { openWindow?: boolean } = {}): Promise<void> {

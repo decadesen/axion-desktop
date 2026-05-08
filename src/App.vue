@@ -10,6 +10,8 @@
         :active-url="bindUrl"
         alt-text="设备绑定二维码"
         :hint="qrHint"
+        :expired="isBootstrapExpired"
+        :refreshing="refreshingBinding"
         @refresh="refreshBindingState"
         @open="openBindLink"
       />
@@ -61,7 +63,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from "vue";
+import { computed, onMounted, ref } from "vue";
 import AuthQrPanel from "./components/AuthQrPanel.vue";
 import { authManager } from "./services/auth/auth-manager";
 import { authState } from "./services/auth/auth-state";
@@ -69,8 +71,9 @@ import { authState } from "./services/auth/auth-state";
 const displayBoxBaseUrl = computed(() => authState.boxBaseUrl || "Vite 代理 -> http://127.0.0.1:26681");
 const desktopConfigPath = computed(() => window.runtime?.env.desktopConfigPath || "config.yaml");
 const isBootstrapExpired = computed(() => String(authState.initInfo?.bind_state ?? "").trim().toLowerCase() === "bootstrap_expired");
-const showBindingQr = computed(() => !isBootstrapExpired.value && !authState.initInfo?.bound && Boolean(authState.initInfo?.issue_link));
+const showBindingQr = computed(() => !authState.initInfo?.bound && Boolean(authState.initInfo?.issue_link));
 const bindUrl = computed(() => resolveCloudUrl(authState.initInfo?.issue_link ?? ""));
+const refreshingBinding = ref(false);
 
 const title = computed(() => {
   if (isBootstrapExpired.value) {
@@ -150,7 +153,20 @@ const stateHint = computed(() => {
 });
 
 const refreshBindingState = async () => {
-  await authManager.forceRefresh();
+  if (refreshingBinding.value) {
+    return;
+  }
+
+  refreshingBinding.value = true;
+  try {
+    if (isBootstrapExpired.value) {
+      await authManager.resetBinding();
+      return;
+    }
+    await authManager.forceRefresh();
+  } finally {
+    refreshingBinding.value = false;
+  }
 };
 
 const openBindLink = () => {

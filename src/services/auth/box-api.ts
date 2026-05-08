@@ -128,6 +128,13 @@ export const pollBoxInitInfo = async (): Promise<BoxInitInfo> => {
   return response.init_info;
 };
 
+export const resetBoxBinding = async (): Promise<BoxInitInfo> => {
+  const response = await requestBox<{ init_info: BoxInitInfo }>("/api/v1/bootstrap/_reset_binding", {
+    body: {},
+  });
+  return response.init_info;
+};
+
 export const createCloudWebAuth = async (): Promise<CloudWebAuthFlow> => {
   const response = await requestBox<{ flow: CloudWebAuthFlow }>("/api/v1/cloud_web_auth/_create", {
     body: {
