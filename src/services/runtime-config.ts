@@ -1,7 +1,6 @@
 export interface RuntimeConfig {
   boxBaseUrl: string;
-  boxStaticTokenPath: string;
-  boxStaticTokenWslDistro: string;
+  desktopConfigPath: string;
   cloudBaseUrl: string;
   deviceBaseUrl: string;
 }
@@ -25,8 +24,7 @@ export const resolveRuntimeConfig = (): RuntimeConfig => {
 
   return {
     boxBaseUrl: import.meta.env.DEV ? "" : configuredBoxBaseUrl,
-    boxStaticTokenPath: env?.boxStaticTokenPath ?? "/srv/axion-box/var/static-token.json",
-    boxStaticTokenWslDistro: env?.boxStaticTokenWslDistro ?? "",
+    desktopConfigPath: env?.desktopConfigPath ?? "config.yaml",
     cloudBaseUrl: resolveBaseUrl(env?.cloudUrl ?? "", env?.cloudHost ?? "127.0.0.1", env?.cloudPort ?? "8080"),
     deviceBaseUrl: import.meta.env.DEV ? "/device-api" : resolveBaseUrl(env?.deviceUrl ?? "", "127.0.0.1", "17890"),
   };

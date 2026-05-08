@@ -27,8 +27,8 @@
             <dd>{{ displayBoxBaseUrl }}</dd>
           </div>
           <div>
-            <dt>令牌文件</dt>
-            <dd>{{ staticTokenPath }}</dd>
+            <dt>桌面配置</dt>
+            <dd>{{ desktopConfigPath }}</dd>
           </div>
           <div v-if="authState.initInfo?.bootstrap_code">
             <dt>绑定码</dt>
@@ -67,7 +67,7 @@ import { authManager } from "./services/auth/auth-manager";
 import { authState } from "./services/auth/auth-state";
 
 const displayBoxBaseUrl = computed(() => authState.boxBaseUrl || "Vite 代理 -> http://127.0.0.1:26681");
-const staticTokenPath = computed(() => window.runtime?.env.boxStaticTokenPath || "未配置");
+const desktopConfigPath = computed(() => window.runtime?.env.desktopConfigPath || "config.yaml");
 const showBindingQr = computed(() => !authState.initInfo?.bound && Boolean(authState.initInfo?.issue_link));
 const bindUrl = computed(() => resolveCloudUrl(authState.initInfo?.issue_link ?? ""));
 
@@ -94,7 +94,7 @@ const description = computed(() => {
     return "正在读取本机令牌并检查 Box 绑定状态。";
   }
   if (authState.stage === "box_offline") {
-    return "请确认本机 axion-box 服务已经启动，并且令牌文件路径配置正确。";
+    return "请确认本机 axion-box 服务已经启动，并且桌面端 config.yaml 中的 static-token 配置正确。";
   }
   if (authState.stage === "device_reinit_required") {
     return "当前设备绑定状态已失效，请重新完成设备绑定。";
@@ -128,7 +128,7 @@ const stateHint = computed(() => {
     return "正在读取 static-token 并请求本机服务。";
   }
   if (authState.stage === "box_offline") {
-    return "检查 axion-box 服务、端口和 static-token 文件路径。";
+    return "检查 axion-box 服务、端口和桌面端 static-token 配置。";
   }
   if (authState.stage === "error") {
     return "可以刷新状态，或展开连接详情查看当前配置。";

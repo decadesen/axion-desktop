@@ -12,6 +12,7 @@ dist
 dist-ssr
 coverage
 artifacts/
+config.yaml
 .playwright-mcp/
 axion-fbgrab.png
 *.local

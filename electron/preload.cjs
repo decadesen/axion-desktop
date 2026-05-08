@@ -2,19 +2,13 @@ const { contextBridge } = require("electron");
 const fs = require("node:fs/promises");
 const http = require("node:http");
 const https = require("node:https");
-const { execFile } = require("node:child_process");
+const path = require("node:path");
 const { URL } = require("node:url");
-const { promisify } = require("node:util");
 
-const execFileAsync = promisify(execFile);
-const staticTokenPath =
-  process.env.AXION_BOX_STATIC_TOKEN_PATH ||
-  process.env.PET_BOX_STATIC_TOKEN_PATH ||
-  "/srv/axion-box/var/static-token.json";
-const staticTokenWslDistro =
-  process.env.AXION_BOX_STATIC_TOKEN_WSL_DISTRO ||
-  process.env.PET_BOX_STATIC_TOKEN_WSL_DISTRO ||
-  "";
+const desktopConfigPath =
+  process.env.AXION_DESKTOP_CONFIG_PATH ||
+  process.env.PET_DESKTOP_CONFIG_PATH ||
+  path.resolve(process.cwd(), "config.yaml");
 
 const runtime = {
   version: "0.1.0",
@@ -25,8 +19,7 @@ const runtime = {
     boxUrl: process.env.PET_BOX_URL || "http://127.0.0.1:26681",
     boxHost: process.env.PET_BOX_HOST || "127.0.0.1",
     boxPort: process.env.PET_BOX_PORT || "26681",
-    boxStaticTokenPath: staticTokenPath,
-    boxStaticTokenWslDistro: staticTokenWslDistro,
+    desktopConfigPath,
     cloudUrl: process.env.PET_CLOUD_URL || "https://api.glenclaw.com",
     cloudHost: process.env.PET_CLOUD_HOST || "127.0.0.1",
     cloudPort: process.env.PET_CLOUD_PORT || "8080",
@@ -75,57 +68,85 @@ const requestDevice = (path, options = {}) =>
     req.end();
   });
 
-const isLinuxAbsolutePath = (value) => value.startsWith("/");
-
-const readStaticTokenFile = async () => {
-  if (process.platform === "win32" && isLinuxAbsolutePath(staticTokenPath)) {
-    const args = [
-      ...(staticTokenWslDistro ? ["-d", staticTokenWslDistro] : []),
-      "--",
-      "cat",
-      staticTokenPath,
-    ];
-    const { stdout } = await execFileAsync("wsl.exe", args, {
-      windowsHide: true,
-      timeout: 5000,
-      maxBuffer: 1024 * 1024,
-    });
-    return stdout;
+const stripInlineComment = (value) => {
+  let quote = "";
+  for (let index = 0; index < value.length; index += 1) {
+    const char = value[index];
+    if ((char === "\"" || char === "'") && value[index - 1] !== "\\") {
+      quote = quote === char ? "" : quote || char;
+      continue;
+    }
+    if (char === "#" && !quote) {
+      return value.slice(0, index).trim();
+    }
   }
-
-  return fs.readFile(staticTokenPath, "utf8");
+  return value.trim();
 };
 
-const isStaticTokenRecord = (value) => {
-  if (!value || typeof value !== "object") {
-    return false;
+const parseYamlScalar = (value) => {
+  const trimmed = stripInlineComment(value);
+  if (!trimmed) {
+    return "";
   }
-  return (
-    typeof value.access_token === "string" &&
-    value.access_token.trim().length > 0 &&
-    typeof value.token_type === "string" &&
-    String(value.scope_token_type || "").trim().toLowerCase() === "static"
-  );
+  if (
+    (trimmed.startsWith("\"") && trimmed.endsWith("\"")) ||
+    (trimmed.startsWith("'") && trimmed.endsWith("'"))
+  ) {
+    return trimmed.slice(1, -1);
+  }
+  return trimmed;
+};
+
+const readNestedYamlScalar = (raw, pathParts) => {
+  const stack = [];
+  for (const line of raw.split(/\r?\n/)) {
+    if (!line.trim() || line.trimStart().startsWith("#")) {
+      continue;
+    }
+    const match = line.match(/^(\s*)([A-Za-z0-9_-]+)\s*:\s*(.*)$/);
+    if (!match) {
+      continue;
+    }
+    const indent = match[1].length;
+    const key = match[2];
+    const value = match[3] ?? "";
+    while (stack.length && stack[stack.length - 1].indent >= indent) {
+      stack.pop();
+    }
+    const currentPath = [...stack.map((item) => item.key), key];
+    if (currentPath.join(".") === pathParts.join(".") && value.trim()) {
+      return parseYamlScalar(value);
+    }
+    if (!value.trim()) {
+      stack.push({ indent, key });
+    }
+  }
+  return "";
+};
+
+const readConfigValue = async (pathParts) => {
+  const raw = await fs.readFile(desktopConfigPath, "utf8");
+  try {
+    const parsed = JSON.parse(raw);
+    const value = pathParts.reduce((current, key) => current?.[key], parsed);
+    return typeof value === "string" ? value.trim() : "";
+  } catch {
+    return readNestedYamlScalar(raw, pathParts);
+  }
 };
 
 const readBoxStaticToken = async () => {
-  const raw = await readStaticTokenFile();
-  const parsed = JSON.parse(raw);
-  const tokens = Array.isArray(parsed?.tokens) ? parsed.tokens : [];
-  const token =
-    tokens.find((item) => isStaticTokenRecord(item) && item.subject_ref === "frontend-ui") ||
-    tokens.find(isStaticTokenRecord);
-
-  if (!token) {
-    throw new Error("No frontend static token found.");
+  const accessToken = await readConfigValue(["box", "static_token"]);
+  if (!accessToken) {
+    throw new Error(`No box.static_token found in ${desktopConfigPath}.`);
   }
 
   return {
-    access_token: token.access_token,
-    token_type: token.token_type || "Bearer",
-    scope_token_type: token.scope_token_type || "static",
-    subject_ref: token.subject_ref || "frontend-ui",
-    display_name: token.display_name || "frontend UI static token",
+    access_token: accessToken,
+    token_type: "Bearer",
+    scope_token_type: "static",
+    subject_ref: "frontend-ui",
+    display_name: "frontend UI static token",
   };
 };
 

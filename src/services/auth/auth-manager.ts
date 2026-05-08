@@ -77,7 +77,7 @@ class AuthManager {
     clearBoxSession();
     setAuthSession(null);
     this.stopHealthLoop();
-    setAuthStage("box_offline", "本机 static-token 无法通过 Box 鉴权，请检查令牌文件是否为当前 Box 生成。");
+    setAuthStage("box_offline", "本机 static-token 无法通过 Box 鉴权，请检查桌面端配置是否与 Box 配置一致。");
   }
 
   handleBindingLost(): void {
@@ -143,7 +143,7 @@ class AuthManager {
   private async loadStaticSession(): Promise<BoxSession> {
     const session = await loadStaticFrontendSession();
     if (!session) {
-      throw new Error("未读取到 Box static-token，请检查令牌文件路径配置。");
+      throw new Error("未读取到 Box static-token，请检查桌面端 config.yaml 中的 box.static_token。");
     }
     return session;
   }

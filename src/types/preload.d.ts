@@ -7,8 +7,7 @@ export interface RuntimeBridge {
     boxUrl: string;
     boxHost: string;
     boxPort: string;
-    boxStaticTokenPath: string;
-    boxStaticTokenWslDistro: string;
+    desktopConfigPath: string;
     cloudUrl: string;
     cloudHost: string;
     cloudPort: string;
