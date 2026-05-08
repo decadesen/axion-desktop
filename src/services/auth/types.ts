@@ -29,6 +29,7 @@ export interface BoxInitInfo {
   device_id?: string;
   hardware_fingerprint?: string;
   bind_state?: string;
+  needs_reset_binding?: boolean;
   device_access_token_expires_at?: string;
 }
 

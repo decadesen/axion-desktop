@@ -10,7 +10,7 @@
         :active-url="bindUrl"
         alt-text="设备绑定二维码"
         :hint="qrHint"
-        :expired="isBootstrapExpired"
+        :reset-required="shouldResetBinding"
         :refreshing="refreshingBinding"
         @refresh="refreshBindingState"
         @open="openBindLink"
@@ -70,7 +70,15 @@ import { authState } from "./services/auth/auth-state";
 
 const displayBoxBaseUrl = computed(() => authState.boxBaseUrl || "Vite 代理 -> http://127.0.0.1:26681");
 const desktopConfigPath = computed(() => window.runtime?.env.desktopConfigPath || "config.yaml");
-const isBootstrapExpired = computed(() => String(authState.initInfo?.bind_state ?? "").trim().toLowerCase() === "bootstrap_expired");
+const normalizedBindState = computed(() => String(authState.initInfo?.bind_state ?? "").trim().toLowerCase());
+const isBootstrapExpired = computed(() => normalizedBindState.value === "bootstrap_expired");
+const shouldResetBinding = computed(
+  () =>
+    isBootstrapExpired.value ||
+    normalizedBindState.value === "reinit_required" ||
+    authState.initInfo?.needs_reset_binding === true ||
+    authState.stage === "device_reinit_required",
+);
 const showBindingQr = computed(() => !authState.initInfo?.bound && Boolean(authState.initInfo?.issue_link));
 const bindUrl = computed(() => resolveCloudUrl(authState.initInfo?.issue_link ?? ""));
 const refreshingBinding = ref(false);
@@ -159,7 +167,7 @@ const refreshBindingState = async () => {
 
   refreshingBinding.value = true;
   try {
-    if (isBootstrapExpired.value) {
+    if (shouldResetBinding.value) {
       await authManager.resetBinding();
       return;
     }

@@ -173,7 +173,7 @@ class AuthManager {
   }
 
   private isReinitRequired(initInfo: BoxInitInfo): boolean {
-    return String(initInfo.bind_state ?? "").trim().toLowerCase() === "reinit_required";
+    return initInfo.needs_reset_binding === true || String(initInfo.bind_state ?? "").trim().toLowerCase() === "reinit_required";
   }
 }
 

@@ -3,8 +3,8 @@
     <div class="qr-frame">
       <img v-if="qrCodeDataUrl" :src="qrCodeDataUrl" :alt="altText" />
       <span v-else>正在生成二维码</span>
-      <div v-if="expired" class="qr-expired-overlay">
-        <strong>绑定码已过期</strong>
+      <div v-if="resetRequired" class="qr-expired-overlay">
+        <strong>绑定码需要刷新</strong>
         <button type="button" :disabled="refreshing" @click="emit('refresh')">
           {{ refreshing ? "刷新中..." : "刷新绑定码" }}
         </button>
@@ -13,9 +13,9 @@
     <p class="qr-hint">{{ hint }}</p>
     <div class="actions qr-actions">
       <button type="button" :disabled="refreshing" @click="emit('refresh')">
-        {{ expired ? "刷新绑定码" : "刷新二维码" }}
+        {{ resetRequired ? "刷新绑定码" : "刷新状态" }}
       </button>
-      <button v-if="activeUrl" type="button" :disabled="expired" @click="emit('open')">打开链接</button>
+      <button v-if="activeUrl" type="button" :disabled="resetRequired" @click="emit('open')">打开链接</button>
     </div>
   </section>
 </template>
@@ -28,7 +28,7 @@ const props = defineProps<{
   activeUrl: string;
   altText: string;
   hint: string;
-  expired?: boolean;
+  resetRequired?: boolean;
   refreshing?: boolean;
 }>();
 
