@@ -68,10 +68,14 @@ import { authState } from "./services/auth/auth-state";
 
 const displayBoxBaseUrl = computed(() => authState.boxBaseUrl || "Vite 代理 -> http://127.0.0.1:26681");
 const desktopConfigPath = computed(() => window.runtime?.env.desktopConfigPath || "config.yaml");
-const showBindingQr = computed(() => !authState.initInfo?.bound && Boolean(authState.initInfo?.issue_link));
+const isBootstrapExpired = computed(() => String(authState.initInfo?.bind_state ?? "").trim().toLowerCase() === "bootstrap_expired");
+const showBindingQr = computed(() => !isBootstrapExpired.value && !authState.initInfo?.bound && Boolean(authState.initInfo?.issue_link));
 const bindUrl = computed(() => resolveCloudUrl(authState.initInfo?.issue_link ?? ""));
 
 const title = computed(() => {
+  if (isBootstrapExpired.value) {
+    return "绑定码已过期";
+  }
   switch (authState.stage) {
     case "checking":
       return "正在检查设备绑定";
@@ -90,6 +94,9 @@ const title = computed(() => {
 });
 
 const description = computed(() => {
+  if (isBootstrapExpired.value) {
+    return "当前 BS code 已经过期，请刷新绑定状态或重新初始化设备后生成新的绑定码。";
+  }
   if (authState.stage === "checking") {
     return "正在读取本机令牌并检查 Box 绑定状态。";
   }
@@ -111,6 +118,9 @@ const qrHint = computed(() => {
 });
 
 const stateLabel = computed(() => {
+  if (isBootstrapExpired.value) {
+    return "BS code 已过期";
+  }
   if (authState.stage === "checking") {
     return "检查中";
   }
@@ -124,6 +134,9 @@ const stateLabel = computed(() => {
 });
 
 const stateHint = computed(() => {
+  if (isBootstrapExpired.value) {
+    return "Box 已识别 cloud 返回的 challenge expired，当前二维码不应继续用于绑定。";
+  }
   if (authState.stage === "checking") {
     return "正在读取 static-token 并请求本机服务。";
   }
